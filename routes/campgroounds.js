@@ -10,6 +10,12 @@ const User = require('../models/user');
 const multer = require('multer');
 const {storage} = require('../cloudinary');
 const cloudinary = require('cloudinary');
+const mapbxGeoCodeing = require('@mapbox/mapbox-sdk/services/geocoding');
+
+
+// Map box Token
+const mapBoxToken = process.env.MAP_TOKEN;
+const geocoder = mapbxGeoCodeing({accessToken: mapBoxToken});
 
 // File upload settings  
 
@@ -49,6 +55,11 @@ router.get('/',async(req, res) => {
 // Add Campgroound in DB
 // =====================
 router.post('/', verifyToken, upload.array('images') ,async(req, res) => {
+    const geoData = await geocoder.forwardGeocode({
+        query: req.body.location,
+        limit: 1
+    }).send()
+    console.log('Geometry Data =',geoData.body.features[0].geometry);
     const campground = new Campground({
         title: req.body.title,
         images: req.body.images,
@@ -56,8 +67,9 @@ router.post('/', verifyToken, upload.array('images') ,async(req, res) => {
         price: req.body.price,
         description: req.body.description,
     });
-    console.log('Input campground === ',campground)
-    console.log('Requested Files ===',req.files);
+    campground.geometry = geoData.body.features[0].geometry;
+    // console.log('Input campground === ',campground)
+    // console.log('Requested Files ===',req.files);
     campground.author = req.userId;
     campground.images = req.files.map( f =>  ({url: f.path, filename: f.filename}));
 
@@ -66,9 +78,10 @@ router.post('/', verifyToken, upload.array('images') ,async(req, res) => {
             console.log(err);
         } else {
             return res.status(200).json({ code: 200, message: 'Campground Added Successfully', data: doc });
-            console.log(campground);
         }
     });
+    console.log('Added Camp =',campground);
+
 });
 
 // ======================
@@ -106,13 +119,25 @@ router.put('/:id', verifyToken, upload.array('images'), async(req, res) => {
     const id = req.params.id;
     const camp = (req.body);
     const campfinding = await Campground.findById(id);
+    // ====================
+    // Update Loacation
+    // ==================
+    const geoData = await geocoder.forwardGeocode({
+        query: req.body.location,
+        limit: 1
+    }).send()
+    console.log('Geometry Data =',geoData.body.features[0].geometry);
 
-    // console.log('Updated Camp ..!',camp);
+    // ================
+    // Findin Camp Log
+    // ================
+    console.log('Updated Camp ..!',camp);
     // console.log('files are =', req.file)
   
     if(!campfinding.author.equals(req.userId)){
         return res.json({ message: 'Unauthorized User'})
     }
+    camp.geometry = geoData.body.features[0].geometry;
     camp.images = req.files.map( f =>  ({url: f.path, filename: f.filename}));
     const campUpdate = await Campground.findByIdAndUpdate(id, { $set: camp }, { new: true });
     //Delete Previous Image when update Image ......

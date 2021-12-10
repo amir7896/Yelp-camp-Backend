@@ -6,11 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "debug " :"server.js"
+    "debug ": "server.js"
   },
   "author": "Amir Shahzad Bhutta",
   "license": "ISC",
   "dependencies": {
+    "@mapbox/mapbox-sdk": "^0.13.2",
     "bcrypt": "^5.0.1",
     "cloudinary": "^1.27.0",
     "cors": "^2.8.5",
