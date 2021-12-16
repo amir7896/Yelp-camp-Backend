@@ -67,9 +67,8 @@ router.post('/', verifyToken, upload.array('images') ,async(req, res) => {
         price: req.body.price,
         description: req.body.description,
     });
+    console.log('added camp  Body =', campground);
     campground.geometry = geoData.body.features[0].geometry;
-    // console.log('Input campground === ',campground)
-    // console.log('Requested Files ===',req.files);
     campground.author = req.userId;
     campground.images = req.files.map( f =>  ({url: f.path, filename: f.filename}));
 
@@ -118,6 +117,8 @@ router.delete('/:id', async(req, res) => {
 router.put('/:id', verifyToken, upload.array('images'), async(req, res) => {
     const id = req.params.id;
     const camp = (req.body);
+    const imgs = req.body.images;
+    console.log('Camp Image Body =', req.body)
     const campfinding = await Campground.findById(id);
     // ====================
     // Update Loacation
@@ -126,13 +127,10 @@ router.put('/:id', verifyToken, upload.array('images'), async(req, res) => {
         query: req.body.location,
         limit: 1
     }).send()
-    console.log('Geometry Data =',geoData.body.features[0].geometry);
-
     // ================
     // Findin Camp Log
     // ================
     console.log('Updated Camp ..!',camp);
-    // console.log('files are =', req.file)
   
     if(!campfinding.author.equals(req.userId)){
         return res.json({ message: 'Unauthorized User'})

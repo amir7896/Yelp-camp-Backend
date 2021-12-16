@@ -22,6 +22,7 @@ const LocalStrategy =  require('passport-local');
 const campgroundRoutes = require('./routes/campgroounds');
 const reviewRoutes = require('./routes/review');
 const userRoutes  = require('./routes/user');
+const resetRoutes  = require('./routes/resetPassword');
 const app = express();
 
 
@@ -97,6 +98,7 @@ db.once('open', () => {
 app.use('/', userRoutes);
 app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/reviews', reviewRoutes);
+app.use('/resetPass', resetRoutes);
 
 
 app.get('/', (req, res) => {
