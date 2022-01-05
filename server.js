@@ -25,6 +25,7 @@ const campgroundRoutes = require('./routes/campgroounds');
 const reviewRoutes = require('./routes/review');
 const userRoutes  = require('./routes/user');
 const resetRoutes  = require('./routes/resetPassword');
+
 const app = express();
 
 
@@ -58,13 +59,9 @@ db.once('open', () => {
 });
 
 // Static files
-app.use(
-    express.static(path.join(__dirname, '../frontend/dist/frontend'), {
-        maxAge: '1y',
-    })
-);
+app.use(express.static(path.join(__dirname, '../frontend/dist/frontend')));
 // Angular app
-app.get('/', (req, res) => {
+app.get('/*', (req, res) => {
     res.sendFile(
         path.join(__dirname, '../frontend/dist/frontend/index.html')
     );
