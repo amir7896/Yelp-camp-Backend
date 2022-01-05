@@ -21,7 +21,7 @@ router.post("/forget", function(req, res,next){
 		function(token, done){
 			User.findOne({email:req.body.email}, function(err,user){
 				if(!user){
-					res.json({ code : 500, message : 'Email Not Exists.!'});
+					res.json({success: false, code : 500, message : 'Email Not Exists.!'});
 					//return res.redirect("/forget");
 				}else{
 					user.resetPasswordToken = token;
@@ -53,7 +53,7 @@ router.post("/forget", function(req, res,next){
       };
 			smtpTransport.sendMail(mailOptions , function(err){
 				console.log("Mail Sent");
-				res.json({code: 300, message: 'Reset Link Has been Sent to Your Email.!'});
+				res.json({success: true, code: 300, message: 'Reset Link Has been Sent to Your Email.!'});
 				done(err, 'done');
 			});
 		}
@@ -87,7 +87,7 @@ router.post('/reset/:token',function(req,res){
 		function(done){
 			User.findOne({resetPasswordToken :req.params.token ,  resetPasswordToken:{$gt :Date.now()}}, function(err,user){
 				if(!user){
-                    res.json({code: 500, message: 'Password Reset Token Has Been Expired.!'})
+                    res.json({success: false, code: 500, message: 'Password Reset Token Has Been Expired.!'})
 					//return res.redi('back');
 				}
 				if(req.body.password === req.body.confirm){
@@ -104,7 +104,7 @@ router.post('/reset/:token',function(req,res){
 				}else{
 					// req.flash("error" , "Password Not Match");
 					//return res.redirect('back');
-					res.json({code: 400, message: 'Password Not Match.!'})
+					res.json({success: false ,code: 400, message: 'Password Not Match.!'})
                     console.log('Eroorrrrrr**');
 				}
 			
@@ -127,7 +127,7 @@ router.post('/reset/:token',function(req,res){
 			};
 			smtpTransport.sendMail(mailOptions, function(err){
 				//req.flash("success", "Your Pass word has Been Changed");
-                res.json({code : 300, message: 'Your Password Has Been Changed.!'})
+                res.json({success: true ,code : 300, message: 'Your Password Has Been Changed.!'})
 				done(err);
 			});
 		}

@@ -97,6 +97,22 @@ router.get('/:id', verifyToken, async(req, res) => {
     return res.json(camp);
 });
 
+// ================================
+// Find Camp Ground By Title
+// ================================
+router.get('/find/:name', async(req, res) => {
+    const input = req.params.name;
+    const findCamp = await Campground.findOne({title: {$regex: input, $options: 'i'}}).limit(5);
+    if(findCamp){
+        console.log(findCamp);
+        return res.json(findCamp);
+    }else{
+        console.log('Camp Not Find By Given Title');
+        res.send('Camp Not Found ..')
+    }
+
+});
+
 // ========================
 // Delete Campground By Id
 // ========================
