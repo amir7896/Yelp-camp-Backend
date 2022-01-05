@@ -2,7 +2,9 @@ if(process.env.NODE_ENV !== "production"){
     require('dotenv').config()
   }
 
-
+const port = process.env.PORT || 8080;
+const dbcon = process.env.DB;
+console.log(dbcon);
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -41,6 +43,22 @@ const sessionConfig = {
 }
 
 
+// Static files
+app.use(
+    express.static(path.join(__dirname, '../frontend/dist/frontend'), {
+        maxAge: '1y',
+    })
+);
+
+// Angular app
+app.get('*', (req, res) => {
+    res.sendFile(
+        path.join(__dirname, '../frontend/dist/frontend/index.html')
+    );
+});
+
+const frontend = require('../frontend/src');
+
 app.use(session(sessionConfig));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -65,7 +83,7 @@ passport.deserializeUser(User.deserializeUser());
 // =====================
 // Data Base Connection
 // ====================
-mongoose.connect('mongodb://localhost:27017/YelpCampImageUpload', {
+mongoose.connect(dbcon, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
@@ -105,6 +123,6 @@ app.get('/', (req, res) => {
     res.send('Welcome To Yelp Camp');
 })
 
-app.listen(3000, () => {
-    console.log('Server Start On Port 3000');
+app.listen(port, () => {
+    console.log('Server Start On Port 8080');
 })
