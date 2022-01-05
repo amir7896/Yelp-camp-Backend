@@ -58,15 +58,6 @@ db.once('open', () => {
     console.log('Data Base Connected Successfully!');
 });
 
-// Static files
-app.use(express.static(path.join(__dirname, '../frontend/dist/frontend')));
-// Angular app
-app.get('*', (req, res) => {
-    res.sendFile(
-        path.join(__dirname, '../frontend/dist/frontend/index.html')
-    );
-});
-
 
 app.use(session(sessionConfig));
 app.use(express.json());
@@ -82,7 +73,12 @@ passport.use(new  LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-
+// Angular app
+app.get('*', (req, res) => {
+    res.sendFile(
+        path.join(__dirname, '../frontend/dist/frontend/index.html')
+    );
+});
 
 
 // ================================================
@@ -104,6 +100,10 @@ app.use('/', userRoutes);
 app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/reviews', reviewRoutes);
 app.use('/resetPass', resetRoutes);
+
+// Static files
+app.use(express.static(path.join(__dirname, '../frontend/dist/frontend')));
+
 
 
 app.listen(port, () => {
