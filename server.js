@@ -58,6 +58,8 @@ db.once('open', () => {
     console.log('Data Base Connected Successfully!');
 });
 
+// Static files
+app.use(express.static(path.join(__dirname, '../frontend/dist/frontend')));
 
 app.use(session(sessionConfig));
 app.use(express.json());
@@ -96,8 +98,7 @@ app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/reviews', reviewRoutes);
 app.use('/resetPass', resetRoutes);
 
-// Static files
-app.use(express.static(path.join(__dirname, '../frontend/dist/frontend')));
+
 // Angular app
 app.get('/', (req, res) => {
     res.sendFile(
