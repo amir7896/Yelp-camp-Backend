@@ -61,7 +61,7 @@ db.once('open', () => {
 // Static files
 app.use(express.static(path.join(__dirname, '../frontend/dist/frontend')));
 // Angular app
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
     res.sendFile(
         path.join(__dirname, '../frontend/dist/frontend/index.html')
     );
